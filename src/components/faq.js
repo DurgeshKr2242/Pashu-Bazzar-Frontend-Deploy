@@ -58,7 +58,7 @@ const SingleQuestion = ({ title, info }) => {
       <header>
         <h4 className="faqTitle">{title}</h4>
         <button className="btn" onClick={() => setShowInfo(!showInfo)}>
-          {showInfo ? "-" : "-"}
+          {showInfo ? "-" : "+"}
         </button>
       </header>
       {showInfo && <p className="faqPara">{info}</p>}
