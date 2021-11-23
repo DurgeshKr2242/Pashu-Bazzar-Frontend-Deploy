@@ -3,13 +3,13 @@ import "./Hero.css";
 const Hero = () => {
   return (
     <div>
-      <div class="hero-image">
-        <div class="hero-text">
+      <div className="hero-image">
+        <div className="hero-text">
           <h1>Pashu Bazar</h1>
           <p>Buy your heart out</p>
           <div className="btnContainer">
-            <button class="btn-default">Buy</button>
-            <button class="btn-default">Sell</button>
+            <button className="btn-default">Buy</button>
+            <button className="btn-default">Sell</button>
           </div>
         </div>
       </div>

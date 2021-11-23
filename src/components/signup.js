@@ -1,7 +1,75 @@
-import React from "react";
-import "../static/signup.css";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+
+import Alert from "@mui/material/Alert";
+import IconButton from "@mui/material/IconButton";
+import Collapse from "@mui/material/Collapse";
+import CloseIcon from "@mui/icons-material/Close";
+
+import { useGlobalAuthContext } from "../AuthContext";
+import "../static/signup.css";
 const Signup = () => {
+  const [registerName, setRegisterName] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+
+  const [loaderOpen, setLoaderOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const {
+    setAuthBackdrop,
+    setUserId,
+    setCurrentUser,
+    setToken,
+    setIsLogedIn,
+    expirationDate,
+  } = useGlobalAuthContext();
+
+  //* REGISTER HANDLER LOGIC
+
+  const registerHandler = async (e) => {
+    e.preventDefault();
+    setLoaderOpen(!loaderOpen);
+    setError(null);
+
+    try {
+      // console.log("upload ke baad ka response");
+      const response = await fetch("http://localhost:5000/api/users/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: registerName,
+          email: registerEmail,
+          password: registerPassword,
+        }),
+      });
+
+      const responseData = await response.json();
+      if (!response.ok) {
+        throw new Error(responseData.message);
+      }
+      console.log(responseData);
+      setLoaderOpen(false);
+      setAuthBackdrop(false);
+      setUserId(responseData.user.id);
+      setCurrentUser(responseData.user);
+      setRegisterName("");
+      setRegisterEmail("");
+      setRegisterPassword("");
+      setIsLogedIn(!!responseData.token);
+      setToken(responseData.token);
+    } catch (err) {
+      // Create a reference to the file to delete
+      console.log(err.message);
+      setError(err.message || "Something went wrong, Please try again");
+      setOpen(true);
+      setLoaderOpen(false);
+    }
+  };
+
   return (
     <>
       <section className="signupFormContainer">
@@ -29,6 +97,27 @@ const Signup = () => {
           </div>
         </div>
         <form className="signupForm">
+          <Collapse in={open}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setOpen(false);
+                    setError(null);
+                  }}
+                >
+                  <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              sx={{ mb: 2 }}
+            >
+              {error}
+            </Alert>
+          </Collapse>
           <h1
             style={{ textAlign: "center", margin: "0.2rem", color: "orange" }}
           >
@@ -44,6 +133,8 @@ const Signup = () => {
               name="signupName"
               className="nameInput"
               placeholder="Full name"
+              onChange={(e) => setRegisterName(e.target.value)}
+              value={registerName}
               required
             />
           </div>
@@ -54,10 +145,12 @@ const Signup = () => {
               name="email"
               className="emailInput"
               placeholder="Email Address"
+              onChange={(e) => setRegisterEmail(e.target.value)}
+              value={registerEmail}
               required
             />
           </div>
-          <div className="signupDOB">
+          {/* <div className="signupDOB">
             <p className="name">DOB</p>
             <input
               type="date"
@@ -106,7 +199,7 @@ const Signup = () => {
               placeholder="Your City"
               required
             />
-          </div>
+          </div> */}
           <div className="signupPassword">
             <p className="name">Password</p>
             <input
@@ -114,11 +207,19 @@ const Signup = () => {
               name="signupPassword"
               className="passwordInput"
               placeholder="Choose a Password"
+              onChange={(e) => setRegisterPassword(e.target.value)}
+              value={registerPassword}
               required
             />
           </div>
 
-          <button type="submit" className="signupSubmit">
+          <button
+            onClick={(e) => {
+              registerHandler(e);
+            }}
+            type="submit"
+            className="signupSubmit"
+          >
             SIGN UP
           </button>
         </form>

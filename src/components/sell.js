@@ -1,7 +1,141 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  uploadBytesResumable,
+  getDownloadURL,
+  ref,
+  deleteObject,
+} from "@firebase/storage";
+import { storage } from "../Firebase";
+// import { useHistory } from "react-router";
+// import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router";
+
 import { Link } from "react-router-dom";
+
+import { useHttpHook } from "../Hooks/HttpHook";
+import { useGlobalAuthContext } from "../AuthContext";
 import "../static/sell.css";
 const Sell = () => {
+  const { currentUser, token } = useGlobalAuthContext();
+  const { loaderOpen, setLoaderOpen, error, sendRequest, open, setOpen } =
+    useHttpHook();
+  const history = useNavigate();
+
+  const [location, setLocation] = useState("");
+  const [price, setPrice] = useState(0);
+  const [contact, setContact] = useState("");
+  const [description, setDescription] = useState("");
+  const [breed, setBreed] = useState("");
+  const [imagePreview, setImagePreview] = useState("");
+  const [file, setFile] = useState(null);
+
+  const handleCoverImgPreviewInput = (e) => {
+    let pickedFile;
+    if (e.target.files && e.target.files.length === 1) {
+      pickedFile = e.target.files[0];
+      setFile(pickedFile);
+    }
+    console.log("Your selected cover img is: ", file);
+  };
+
+  //* UPLOAD FILE LOGIC
+
+  let storageURL;
+  // let imageName;
+
+  async function uploadTaskPromise(file) {
+    return new Promise(function (resolve, reject) {
+      // setLoaderOpen(true);
+      if (!file) return;
+
+      // setLoaderOpen(true);
+      const storageRef = ref(storage, `postCoverImg/${file.name}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      console.log("uploadTask starting...");
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const prog = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          console.log(prog);
+        },
+        (error) => {
+          console.log("ERRRRR!!!!!!");
+          alert("Error inside upload file function", error);
+          // setLoaderOpen(false);
+
+          reject();
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            console.log("File available at", downloadURL);
+            // setLoaderOpen(false);
+
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
+  }
+
+  const postSubmitHandler = async (e) => {
+    e.preventDefault();
+    // console.log(title, description, tag1, tag2, tag3, tag4, content);
+
+    try {
+      // setLoaderOpen(true);
+
+      storageURL = await uploadTaskPromise(file);
+      console.log("PROmisE REsOLVEd ANd got the urL AS", storageURL);
+      // setLoaderOpen(false);
+
+      // imageName = storageURL
+      //   .substring(storageURL.indexOf("%2F") + 1, storageURL.lastIndexOf("?"))
+      //   .slice(2);
+      // console.log(imageName);
+
+      await sendRequest(
+        "http://localhost:5000/api/posts",
+        "POST",
+        JSON.stringify({
+          location,
+          description,
+          price,
+          contact,
+          breed,
+          creatorId: currentUser.id,
+          image: storageURL,
+          coverImageName: file.name,
+        }),
+        {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        }
+      );
+      console.log("REQUEST SENT");
+      history.push("/");
+      setLocation("");
+      setPrice(0);
+      setContact("");
+      setDescription("");
+      setBreed("");
+      setFile(null);
+      //  setImagePreview ("");
+    } catch (err) {
+      // Create a reference to the file to delete
+      const deleteImgRef = ref(storage, `postCoverImg/${file.name}`);
+      deleteObject(deleteImgRef)
+        .then(() => {
+          console.log("Something Went wrong, Image deleted successfully");
+        })
+        .catch((error) => {
+          console.log("an error occured while deleting image", error);
+          // throw new Error(error);
+        });
+    }
+  };
+
   return (
     <section className="sellFormContainer">
       <div className="sellImg">
@@ -36,12 +170,14 @@ const Sell = () => {
         </p>
 
         <div className="sellName">
-          <p className="name">Name</p>
+          <p className="name">Breed</p>
           <input
             type="text"
             name="sellCattleName"
             className="nameInput"
-            placeholder="Name of cattle"
+            placeholder="Breed of cattle"
+            onChange={(e) => setBreed(e.target.value)}
+            value={breed}
             required
           />
         </div>
@@ -53,17 +189,21 @@ const Sell = () => {
             name="sellPrice"
             className="priceInput"
             placeholder="Price"
+            onChange={(e) => setPrice(e.target.value)}
+            value={price}
             required
           />
         </div>
 
         <div className="sellLocation">
-          <p className="name">City</p>
+          <p className="name">Location</p>
           <input
             type="text"
             name="sellOwnerCity"
             className="locationInput"
             placeholder="Location of Owner"
+            onChange={(e) => setLocation(e.target.value)}
+            value={location}
             required
           />
         </div>
@@ -74,6 +214,8 @@ const Sell = () => {
             name="sellPhone"
             className="phoneInput"
             placeholder="Phone number"
+            onChange={(e) => setContact(e.target.value)}
+            value={contact}
             required
           />
         </div>
@@ -83,6 +225,7 @@ const Sell = () => {
             type="file"
             name="sellCattleImage"
             className="imageInput"
+            onChange={handleCoverImgPreviewInput}
             required
           />
         </div>
@@ -94,11 +237,19 @@ const Sell = () => {
             placeholder="Your Message"
             rows="6"
             name="cattleDesc"
+            onChange={(e) => setDescription(e.target.value)}
+            value={description}
             required
           ></textarea>
         </div>
 
-        <button type="submit" className="sellSubmit">
+        <button
+          onClick={(e) => {
+            postSubmitHandler(e);
+          }}
+          type="submit"
+          className="sellSubmit"
+        >
           POST
         </button>
       </form>

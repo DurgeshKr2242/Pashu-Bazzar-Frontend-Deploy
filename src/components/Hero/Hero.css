@@ -67,9 +67,10 @@
   background: linear-gradient(to bottom left, #ef8d9c 40%, #ffc39e 100%);
   /* background-color: #ffc312; */
   transition: background-color 0.1s;
+  cursor: pointer;
 }
 
 .btn-default:hover,
 .btn-default:active {
-  background-color: #896600;
+  background: #617d98;
 }
