@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 import "./Hero.css";
 const Hero = () => {
   return (
@@ -8,8 +10,24 @@ const Hero = () => {
           <h1>Pashu Bazar</h1>
           <p>Buy your heart out</p>
           <div className="btnContainer">
-            <button className="btn-default">Buy</button>
-            <button className="btn-default">Sell</button>
+            <Link
+              to="/buy"
+              style={{
+                textDecoration: "none",
+                color: "black",
+              }}
+            >
+              <button className="btn-default">Buy</button>
+            </Link>
+            <Link
+              to="/sell"
+              style={{
+                textDecoration: "none",
+                color: "black",
+              }}
+            >
+              <button className="btn-default">Sell</button>
+            </Link>
           </div>
         </div>
       </div>

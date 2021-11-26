@@ -26,7 +26,7 @@ const Sell = () => {
   const [contact, setContact] = useState("");
   const [description, setDescription] = useState("");
   const [breed, setBreed] = useState("");
-  const [imagePreview, setImagePreview] = useState("");
+  // const [imagePreview, setImagePreview] = useState("");
   const [file, setFile] = useState(null);
 
   const handleCoverImgPreviewInput = (e) => {
@@ -49,7 +49,7 @@ const Sell = () => {
       if (!file) return;
 
       // setLoaderOpen(true);
-      const storageRef = ref(storage, `postCoverImg/${file.name}`);
+      const storageRef = ref(storage, `img/${file.name}`);
       const uploadTask = uploadBytesResumable(storageRef, file);
       console.log("uploadTask starting...");
       uploadTask.on(
@@ -64,14 +64,12 @@ const Sell = () => {
           console.log("ERRRRR!!!!!!");
           alert("Error inside upload file function", error);
           // setLoaderOpen(false);
-
           reject();
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             console.log("File available at", downloadURL);
             // setLoaderOpen(false);
-
             resolve(downloadURL);
           });
         }
@@ -96,7 +94,7 @@ const Sell = () => {
       // console.log(imageName);
 
       await sendRequest(
-        "http://localhost:5000/api/posts",
+        "https://pashu-bazzar.herokuapp.com/api/posts",
         "POST",
         JSON.stringify({
           location,
@@ -106,15 +104,17 @@ const Sell = () => {
           breed,
           creatorId: currentUser.id,
           image: storageURL,
-          coverImageName: file.name,
+          // coverImageName: file.name,
         }),
         {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token,
+          "Access-Control-Allow-Origin": "*",
         }
       );
       console.log("REQUEST SENT");
-      history.push("/");
+      // history.push("/");
+
       setLocation("");
       setPrice(0);
       setContact("");
@@ -124,7 +124,7 @@ const Sell = () => {
       //  setImagePreview ("");
     } catch (err) {
       // Create a reference to the file to delete
-      const deleteImgRef = ref(storage, `postCoverImg/${file.name}`);
+      const deleteImgRef = ref(storage, `img/${file.name}`);
       deleteObject(deleteImgRef)
         .then(() => {
           console.log("Something Went wrong, Image deleted successfully");

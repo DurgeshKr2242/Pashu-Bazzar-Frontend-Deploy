@@ -1,12 +1,17 @@
 import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/homePage";
-import LoginPage from "./pages/loginPage";
-import SignupPage from "./pages/signupPage";
-import SellPage from "./pages/sellPage";
-import BuyPage from "./pages/buyPage";
+// import LoginPage from "./pages/loginPage";
+// import SignupPage from "./pages/signupPage";
+// import SellPage from "./pages/sellPage";
+// import BuyPage from "./pages/buyPage";
 import { useGlobalAuthContext } from "./AuthContext";
 
+// const HomePage = React.lazy(() => import("./pages/homePage"));
+const LoginPage = React.lazy(() => import("./pages/loginPage"));
+const SignupPage = React.lazy(() => import("./pages/signupPage"));
+const SellPage = React.lazy(() => import("./pages/sellPage"));
+const BuyPage = React.lazy(() => import("./pages/buyPage"));
 const App = () => {
   const {
     setUserId,

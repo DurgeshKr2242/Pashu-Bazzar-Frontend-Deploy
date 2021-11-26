@@ -1,11 +1,23 @@
 import React from "react";
-import "../static/navbar.css";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+
+import { useGlobalAuthContext } from "../AuthContext";
+import "../static/navbar.css";
 const Navbar = ({ styling1, styling2, styling3, noLogin, noSignup }) => {
   const [showSidebar, setShowSidebar] = useState(false);
+  const {
+    authBackdrop,
+    setAuthBackdrop,
+    // isLogedIn,
+    setToken,
+    setUserId,
+    currentUser,
+    setCurrentUser,
+    token,
+  } = useGlobalAuthContext();
   const LinkList = [
     { id: 1, link: "/", head: "Home", styling: styling1 },
     { id: 3, link: "/sell", head: "Sell", styling: styling2 },
@@ -16,6 +28,13 @@ const Navbar = ({ styling1, styling2, styling3, noLogin, noSignup }) => {
   };
   const sidebarHider = () => {
     setShowSidebar(false);
+  };
+
+  const logoutHandler = () => {
+    setToken(false);
+    setUserId(null);
+    setCurrentUser(null);
+    localStorage.removeItem("userData");
   };
 
   return (
@@ -57,7 +76,37 @@ const Navbar = ({ styling1, styling2, styling3, noLogin, noSignup }) => {
             })}
 
             <div className="buttonContainer">
-              {noLogin ? (
+              {token ? (
+                <button onClick={logoutHandler} className="navbarLogin">
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    style={{
+                      textDecoration: "none",
+                      color: "black",
+                    }}
+                  >
+                    <button onClick={sidebarHider} className="navbarLogin">
+                      Login
+                    </button>
+                  </Link>
+                  <Link
+                    to="/signup"
+                    style={{
+                      textDecoration: "none",
+                      color: "black",
+                    }}
+                  >
+                    <button onClick={sidebarHider} className="navbarSignup">
+                      Signup
+                    </button>
+                  </Link>
+                </>
+              )}
+              {/* {noLogin ? (
                 ""
               ) : (
                 <Link
@@ -86,9 +135,10 @@ const Navbar = ({ styling1, styling2, styling3, noLogin, noSignup }) => {
                     Signup
                   </button>
                 </Link>
-              )}
+              )} */}
             </div>
           </div>
+          <p>{currentUser?.name}</p>
         </nav>
       </section>
     </main>

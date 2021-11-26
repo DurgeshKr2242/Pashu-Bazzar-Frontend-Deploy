@@ -35,17 +35,20 @@ const Signup = () => {
 
     try {
       // console.log("upload ke baad ka response");
-      const response = await fetch("http://localhost:5000/api/users/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: registerName,
-          email: registerEmail,
-          password: registerPassword,
-        }),
-      });
+      const response = await fetch(
+        "https://pashu-bazzar.herokuapp.com/api/users/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: registerName,
+            email: registerEmail,
+            password: registerPassword,
+          }),
+        }
+      );
 
       const responseData = await response.json();
       if (!response.ok) {

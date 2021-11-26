@@ -29,16 +29,19 @@ const Login = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: loginEmail,
-          password: loginPassword,
-        }),
-      });
+      const response = await fetch(
+        "https://pashu-bazzar.herokuapp.com/api/users/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: loginEmail,
+            password: loginPassword,
+          }),
+        }
+      );
 
       const responseData = await response.json();
       if (!response.ok) {
@@ -158,7 +161,11 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" className="loginSubmit">
+          <button
+            onClick={(e) => loginHandler(e)}
+            type="submit"
+            className="loginSubmit"
+          >
             LOGIN
           </button>
         </form>
