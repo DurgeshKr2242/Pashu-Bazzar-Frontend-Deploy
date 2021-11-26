@@ -110,6 +110,7 @@ const Sell = () => {
           "Content-Type": "application/json",
           Authorization: "Bearer " + token,
           "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
         }
       );
       console.log("REQUEST SENT");
