@@ -96,22 +96,25 @@ const Sell = () => {
       //   .slice(2);
       // console.log(imageName);
 
-      const response = await fetch("http://localhost:5000/api/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({
-          location,
-          description,
-          price,
-          contact,
-          breed,
-          creatorId: currentUser.id,
-          image: storageURL,
-        }),
-      });
+      const response = await fetch(
+        "https://pashu-bazzar.herokuapp.com/api/posts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            location,
+            description,
+            price,
+            contact,
+            breed,
+            creatorId: currentUser.id,
+            image: storageURL,
+          }),
+        }
+      );
       console.log(response);
 
       // await sendRequest(
