@@ -97,7 +97,7 @@ const Sell = () => {
       // console.log(imageName);
 
       const response = await fetch(
-        "https://pashu-bazzar.herokuapp.com/api/posts",
+        "http://pashu-bazzar.herokuapp.com/api/posts",
         {
           method: "POST",
           headers: {
