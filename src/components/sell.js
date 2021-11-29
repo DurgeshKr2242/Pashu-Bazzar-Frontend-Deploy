@@ -149,6 +149,8 @@ const Sell = () => {
       setFile(null);
       //  setImagePreview ("");
     } catch (err) {
+      setLoader(false);
+
       // Create a reference to the file to delete
       const deleteImgRef = ref(storage, `img/${file.name}`);
       deleteObject(deleteImgRef)
