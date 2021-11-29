@@ -9,7 +9,7 @@ import { storage } from "../Firebase";
 // import { useHistory } from "react-router";
 // import { useHistory } from "react-router-dom";
 import { useNavigate } from "react-router";
-
+import axios from "axios";
 import { Link } from "react-router-dom";
 
 import Loader from "./Loader/Loader";
@@ -96,23 +96,45 @@ const Sell = () => {
       //   .slice(2);
       // console.log(imageName);
 
-      const response = await fetch("http://localhost:5000/api/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({
-          location,
-          description,
-          price,
-          contact,
-          breed,
-          creatorId: currentUser.id,
-          image: storageURL,
-        }),
-      });
+      const sendBody = {
+        location,
+        description,
+        price,
+        contact,
+        breed,
+        creatorId: currentUser.id,
+        image: storageURL,
+      };
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      };
+      const response = await axios.post(
+        "https://pashu-bazzar.herokuapp.com/api/posts",
+        sendBody,
+        { headers }
+      );
+
       console.log(response);
+
+      // const response = await fetch("http://localhost:5000/api/posts", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: "Bearer " + token,
+      //   },
+      //   body: JSON.stringify({
+      //     location,
+      //     description,
+      //     price,
+      //     contact,
+      //     breed,
+      //     creatorId: currentUser.id,
+      //     image: storageURL,
+      //   }),
+      // });
+      // console.log(response);
 
       // await sendRequest(
       //   "http://localhost:5000/api/posts",
